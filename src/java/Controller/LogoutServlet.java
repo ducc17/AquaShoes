@@ -5,8 +5,6 @@
 
 package Controller;
 
-import dao.UserDAO;
-import entity.User;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -20,8 +18,8 @@ import jakarta.servlet.http.HttpSession;
  *
  * @author Wind
  */
-@WebServlet(name="LoginServlet", urlPatterns={"/login"})
-public class LoginServlet extends HttpServlet {
+@WebServlet(name="LogoutServlet", urlPatterns={"/logout"})
+public class LogoutServlet extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -33,7 +31,9 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-//        
+        HttpSession session = request.getSession();
+        session.removeAttribute("acc");
+        response.sendRedirect("index.jsp");
     } 
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -47,8 +47,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-       
-    request.getRequestDispatcher("login.jsp").forward(request, response);
+        processRequest(request, response);
     } 
 
     /** 
@@ -61,23 +60,7 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-       try {
-            String user = request.getParameter("username");
-            String pass = request.getParameter("password");
-            UserDAO loginDAO = new UserDAO();
-            User a = loginDAO.checkLogin(user, pass);
-            if(a == null){
-                request.setAttribute("mess", "Wrong user or  pass");
-                request.getRequestDispatcher("login.jsp").forward(request, response);
-            }
-            else{
-                HttpSession session = request.getSession();
-                session.setAttribute("acc", a);
-//                session.setMaxInactiveInterval(600);
-                response.sendRedirect("index.jsp");
-            }
-        } catch (Exception e) {
-        }
+        processRequest(request, response);
     }
 
     /** 
